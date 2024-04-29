@@ -1,0 +1,1 @@
+# fullstack-develop-example-at-django-nextjs
