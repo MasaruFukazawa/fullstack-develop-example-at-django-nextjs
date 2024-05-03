@@ -14,7 +14,8 @@ import {
 import { useState } from "react";
 import {useRouter} from 'next/navigation'
 import {useForm} from "react-hook-form";
-
+import axios from 'axios';
+import { RequestPageOutlined } from '@mui/icons-material';
 
 interface FormData {
     username: string
@@ -30,9 +31,20 @@ export default function Page() {
         formState: { errors },
     } = useForm()
 
-    const router = useRouter()
+    const [authError, setAuthError] = useState('')
 
-    const defaultTheme = createTheme();
+    const router = useRouter()
+  
+    const handleLogin = (data: FormData) => {
+        axios
+            .post('/api/inventory/login', data)
+            .then((response) => {
+                router.push('/inventory/products')
+            })
+            .catch((error) => { console.log("error")
+                setAuthError('ユーザ名またはパスワードに誤りがあります。')
+            })
+    };
 
     const onSubmit = (event: any): void => {
         const data: FormData = {
@@ -43,9 +55,7 @@ export default function Page() {
         handleLogin(data);
     }
 
-    const handleLogin = (data: FormData) => {
-        router.push("/inventory/products");
-    };
+    const defaultTheme = createTheme();
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -59,6 +69,11 @@ export default function Page() {
                 }} >
                     <Typography component="h1" variant="h5">ログイン</Typography>
                     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+                        {authError && (
+                            <Typography variant="body2" color="error">
+                                {authError} 
+                            </Typography>
+                        )}{''}
                         <TextField
                             type="text"
                             id="username"
