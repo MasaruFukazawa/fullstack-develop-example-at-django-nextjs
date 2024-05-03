@@ -11,6 +11,8 @@ django = "^5.0.4"
 djangorestframework = "^3.15.1"
 psycopg2 = "^2.9.9"
 psycopg = "^3.1.18"
+djangorestframework-simplejwt = "^5.3.1"
+timedelta = "^2020.12.3"
 
 
 [build-system]
