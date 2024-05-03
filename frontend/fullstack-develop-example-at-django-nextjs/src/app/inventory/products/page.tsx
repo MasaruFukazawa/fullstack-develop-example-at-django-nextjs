@@ -23,8 +23,6 @@ import { useForm } from "react-hook-form";
 import Link from 'next/link'
 import axios from 'axios';
 
-import proudctDatas from './sample/dummy_products.json'
-
 
 interface ProductData {
     id: number | null;
