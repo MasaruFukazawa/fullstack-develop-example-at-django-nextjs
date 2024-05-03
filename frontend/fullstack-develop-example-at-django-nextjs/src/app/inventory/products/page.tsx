@@ -1,7 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-
 import {
     Alert,
     AlertColor,
@@ -20,10 +18,13 @@ import {
     Typography,
 } from "@mui/material";
 
+import { useState, useEffect } from 'react'
 import { useForm } from "react-hook-form";
 import Link from 'next/link'
+import axios from 'axios';
 
 import proudctDatas from './sample/dummy_products.json'
+
 
 interface ProductData {
     id: number | null;
@@ -31,6 +32,7 @@ interface ProductData {
     price: number;
     description: string;
 }
+
 
 export default function Page() {
 
@@ -57,8 +59,13 @@ export default function Page() {
     }
 
     useEffect(() => {
-        setData(proudctDatas)
-    }, [])
+
+        axios.get('/api/inventory/products/')
+            .then((res) => res.data)
+            .then((data) => {
+                setData(data)
+            })
+    }, [open])
 
     const [id, setId] = useState<number | null>(0)
 
