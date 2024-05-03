@@ -117,15 +117,55 @@ export default function Page({params}: {params: { id: number },}) {
 
     // 追加登録
     const onSubmit = (event: any): void => {
+
+
+        if (action === 'purchase') {
+
+            const data = {
+                product: params.id,
+                quantity: event.quantity,
+                purchase_date: new Date(),
+            }
+
+            if (product === null) {
+                return
+            }
+
+            handlePurchase(data)
+
+        } else if (action === 'sell') {
+
+            const data = {
+                product: params.id,
+                quantity: event.quantity,
+                sales_date: new Date(),
+            }
+
+            if (product === null) {
+                return
+            }
+
+            handleSell(data)
+
+        }
+
     }
 
     // 仕入れ・卸し処理
-    const handlePurchase = (data: FormData) => {
-        result('success', '商品を仕入れました')
-    };
+    const handlePurchase = (data: any) => {
 
-    const handleSell = (data: FormData) => {
-        result('success', '商品を卸しました')
+        axios.post("/api/inventory/purchases", data).then((res) => {
+            result('success', '商品を仕入れました')
+        })
+
+    }
+
+    const handleSell = (data: any) => {
+
+        axios.post("/api/inventory/sales", data).then((res) => {
+            result('success', '商品を卸しました')
+        });
+
     };
 
     return (
@@ -142,7 +182,16 @@ export default function Page({params}: {params: { id: number },}) {
                 </div>
                 <div>
                     <label>数量:</label>
-                    <input type="text" />
+                    <input type="number" id="quantity" {...register(
+                        'quantity', 
+                        {
+                            required: '必須項目です。',
+                            min: 1,
+                            max: 99999999, 
+                        })
+                    } 
+                    />
+                    {errors.quantity && ( <div>1から99999999の数値をを入力してください。</div> )}
                 </div>
                 <Button
                     variant="contained"
@@ -159,31 +208,33 @@ export default function Page({params}: {params: { id: number },}) {
                     商品を卸す
                 </Button>
             </Box>
-            <h3>在庫履歴</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>処理種別</th>
-                        <th>処理日時</th>
-                        <th>単価</th>
-                        <th>数量</th>
-                        <th>価格</th>
-                        <th>在庫数</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((data: InventoryData) => (
-                    <tr key={data.id}>
-                        <td>{data.type}</td>
-                        <td>{data.date}</td>
-                        <td>{data.unit}</td>
-                        <td>{data.quantity}</td>
-                        <td>{data.price}</td>
-                        <td>{data.inventory}</td>
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
+            <Typography variant="h6">在庫履歴</Typography>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <tr>
+                            <th>処理種別</th>
+                            <th>処理日時</th>
+                            <th>単価</th>
+                            <th>数量</th>
+                            <th>価格</th>
+                            <th>在庫数</th>
+                        </tr>
+                    </TableHead>
+                    <TableBody>
+                        {data.map((data: InventoryData) => (
+                        <TableRow key={data.id}>
+                            <TableCell>{data.type}</TableCell>
+                            <TableCell>{data.date}</TableCell>
+                            <TableCell>{data.unit}</TableCell>
+                            <TableCell>{data.quantity}</TableCell>
+                            <TableCell>{data.price}</TableCell>
+                            <TableCell>{data.inventory}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     )
 
