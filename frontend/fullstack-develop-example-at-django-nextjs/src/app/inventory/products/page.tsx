@@ -57,7 +57,6 @@ export default function Page() {
     }
 
     useEffect(() => {
-
         axios.get('/api/inventory/products/')
             .then((res) => res.data)
             .then((data) => {
@@ -122,9 +121,13 @@ export default function Page() {
         setId(0)
     }
 
-    // .. shownNewRow を false にする
+    // 登録処理
     const handleAdd = (data: ProductData) => {
-        result('success', '商品が登録されました')
+
+        axios.post("/api/inventory/products", data).then((res) => {
+            result('success', '商品が登録されました')
+        })
+
         setId(0)
     }
 
@@ -144,17 +147,25 @@ export default function Page() {
         })
     }
 
+    const handleEdit = (data: ProductData) => {
+
+        axios.put(`/api/inventory/products/${data.id}`, data).then((res) => {
+            result('success', '商品が更新されました')
+        })
+        
+        setId(0)
+    }
+
     const handleEditCancel = () => {
         setId(0)
     }
 
-    const handleEdit = (data: ProductData) => {
-        result('success', '商品が更新されました')
-        setId(0)
-    }
-
     const handleDelete = (id: number) => {
-        result('success', '商品が削除されました')
+
+        axios.delete(`/api/inventory/products/${id}`).then((res) => { 
+            result('success', '商品が削除されました')
+        })
+
         setId(0)
     }
 

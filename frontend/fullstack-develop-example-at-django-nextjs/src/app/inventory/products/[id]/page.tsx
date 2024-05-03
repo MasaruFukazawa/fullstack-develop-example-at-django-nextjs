@@ -110,7 +110,7 @@ export default function Page({params}: {params: { id: number },}) {
                 setData(inventoryData);
             })
 
-    }, [open])
+    },[open])
 
     // submit時のactionを分岐させる
     const [action, setAction] = useState<string>("");
