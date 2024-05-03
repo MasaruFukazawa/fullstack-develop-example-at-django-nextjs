@@ -2,6 +2,24 @@
 
 import { useState, useEffect } from 'react'
 
+import {
+    Alert,
+    AlertColor,
+    Box,
+    Button,
+    IconButton,
+    Paper,
+    Snackbar,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
+} from "@mui/material";
+
 import { useForm } from "react-hook-form";
 import Link from 'next/link'
 
@@ -24,6 +42,19 @@ export default function Page() {
     } = useForm()
 
     const [data, setData] = useState<Array<ProductData>>([])
+    const [open, setOpen] = useState(false)
+    const [severity, setSeverity] = useState<AlertColor>('success')
+    const [message, setMessage] = useState('')
+
+    const result = (severity: AlertColor, message: string) => {
+        setOpen(true)
+        setSeverity(severity)
+        setMessage(message)
+    }
+
+    const handleClose = (event: any, reason: any) => {
+        setOpen(false)
+    }
 
     useEffect(() => {
         setData(proudctDatas)
@@ -88,6 +119,7 @@ export default function Page() {
 
     // .. shownNewRow を false にする
     const handleAdd = (data: ProductData) => {
+        result('success', '商品が登録されました')
         setId(0)
     }
 
@@ -112,20 +144,32 @@ export default function Page() {
     }
 
     const handleEdit = (data: ProductData) => {
+        result('success', '商品が更新されました')
         setId(0)
     }
 
     const handleDelete = (id: number) => {
+        result('success', '商品が削除されました')
         setId(0)
     }
 
     return (
         <>
-            <h2>商品一覧</h2>
-            <button type='button' onClick={ handleShowNewRow } >
+            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+                <Alert severity={severity}>{message}</Alert>
+            </Snackbar>
+            <Typography variant="h5">商品一覧</Typography>
+            <Button
+                variant="contained"
+                onClick={() => handleShowNewRow()}
+            >
                 商品を追加する
-            </button>
-            <form onSubmit={handleSubmit(onSubmit)} >
+            </Button>
+            <Box
+                component="form"
+                onSubmit={handleSubmit(onSubmit)}
+                sx={{ height: 400, width: "100%" }}
+            >
                 <table>
                     <thead>
                         <tr>
@@ -220,7 +264,7 @@ export default function Page() {
                         )}
                     </tbody>
                 </table>
-            </form>
+            </Box>
         </>
     )
 }

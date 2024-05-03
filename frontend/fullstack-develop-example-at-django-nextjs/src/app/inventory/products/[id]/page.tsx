@@ -2,6 +2,27 @@
 
 import { useState, useEffect } from 'react'
 
+import {
+    Alert,
+    AlertColor,
+    Box,
+    Button,
+    IconButton,
+    Paper,
+    Snackbar,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
+} from "@mui/material";
+
+import { useForm } from "react-hook-form";
+import Link from 'next/link'
+
 import proudctData from '../sample/dummy_products.json'
 import inventoriesData from '../sample/dummy_inventories.json'
 
@@ -23,6 +44,27 @@ interface InventoryData {
 }
 
 export default function Page({params}: {params: { id: number },}) {
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm()
+    
+    const [open, setOpen] = useState(false)
+    const [severity, setSeverity] = useState<AlertColor>('success')
+    const [message, setMessage] = useState('')
+
+    const result = (severity: AlertColor, message: string) => {
+        setOpen(true)
+        setSeverity(severity)
+        setMessage(message)
+    }
+
+    const handleClose = (event: any, reason: any) => {
+        setOpen(false)
+    }
 
     // useEffect内で変わる変数
     const [product, setProduct] = useState<ProductData>({
@@ -48,11 +90,30 @@ export default function Page({params}: {params: { id: number },}) {
 
     },[])
 
+    // submit時のactionを分岐させる
+    const [action, setAction] = useState<string>("");
+
+    // 追加登録
+    const onSubmit = (event: any): void => {
+    }
+
+    // 仕入れ・卸し処理
+    const handlePurchase = (data: FormData) => {
+        result('success', '商品を仕入れました')
+    };
+
+    const handleSell = (data: FormData) => {
+        result('success', '商品を卸しました')
+    };
+
     return (
         <>
-            <h2>商品在庫管理</h2>
-            <h3>在庫処理</h3>
-            <form>
+            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+                <Alert severity={severity}>{message}</Alert>
+            </Snackbar>
+            <Typography variant="h5">商品在庫管理</Typography>
+            <Typography variant="h6">在庫処理</Typography>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
                 <div>
                     <label>商品名:</label>
                     <span>{product.name}</span>
@@ -61,9 +122,21 @@ export default function Page({params}: {params: { id: number },}) {
                     <label>数量:</label>
                     <input type="text" />
                 </div>
-                <button>商品を仕入れる</button>
-                <button>商品を卸す</button>
-            </form>
+                <Button
+                    variant="contained"
+                    type="submit"
+                    onClick={() => setAction("purchase")}
+                >
+                    商品を仕入れる
+                </Button>
+                <Button
+                    variant="contained"
+                    type="submit"
+                    onClick={() => setAction("sell")}
+                >
+                    商品を卸す
+                </Button>
+            </Box>
             <h3>在庫履歴</h3>
             <table>
                 <thead>
