@@ -16,7 +16,7 @@ import { RequestPageOutlined } from '@mui/icons-material';
 import { useState } from "react";
 import {useForm} from "react-hook-form";
 import {useRouter} from 'next/navigation'
-import axios from 'axios';
+import axios from '../../../plugins/axios';
 
 
 interface FormData {

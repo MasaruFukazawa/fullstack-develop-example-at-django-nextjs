@@ -30,3 +30,9 @@ class InventorySerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     type = serializers.IntegerField()
     date = serializers.DateTimeField()
+
+
+class FileSerializer(serializers.Serializer):
+    """ ファイルを取り扱うためのシリアライザ
+    """
+    file = serializers.FileField()

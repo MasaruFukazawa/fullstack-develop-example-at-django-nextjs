@@ -21,7 +21,7 @@ import {
 import { useState, useEffect } from 'react'
 import { useForm } from "react-hook-form";
 import Link from 'next/link'
-import axios from 'axios';
+import axios from '../../../../plugins/axios';
 
 
 interface ProductData {

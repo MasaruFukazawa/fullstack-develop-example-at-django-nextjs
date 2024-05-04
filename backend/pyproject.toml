@@ -13,6 +13,7 @@ psycopg2 = "^2.9.9"
 psycopg = "^3.1.18"
 djangorestframework-simplejwt = "^5.3.1"
 timedelta = "^2020.12.3"
+pandas = "^2.2.2"
 
 
 [build-system]

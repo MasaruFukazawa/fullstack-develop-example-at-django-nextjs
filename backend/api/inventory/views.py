@@ -12,14 +12,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
+import pandas
+
 from api.inventory.authentication import CustomJWTAuthentication
 from api.inventory.exception import BusinessException
-from .models import Product, Purchase, Sales
+from .models import Product, Purchase, Sales, SalesFile, Status
 from .serializers import (
     InventorySerializer,
     ProductSerializer,
     PurchaseSerializer,
-    SalesSerializer
+    SalesSerializer,
+    FileSerializer
 )
 
 
@@ -215,7 +218,8 @@ class RetryView(APIView):
     permission_classes = []
 
     def post(self, request):
-        request.data['refresh'] = request.META.get('HTTP_REFRESH_TOKEN')
+        #request.data['refresh'] = request.META.get('HTTP_REFRESH_TOKEN')
+        request.data['refresh'] = request.COOKIES.get('refresh')
         serializer = TokenRefreshSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         access = serializer.validated_data.get("access", None)
@@ -241,3 +245,46 @@ class LogoutView(APIView):
         response.delete_cookie('access')
         response.delete_cookie('refresh')
         return response
+
+
+class SalesAsyncView(APIView):
+    pass
+
+
+class SalesSyncView(APIView):
+    """
+    """
+    # 認証クラスの指定
+    #authentication_classes = [CustomJWTAuthentication]
+
+    # アクセス許可の指定
+    # .. 認証済みのリクエストのみ許可
+    #permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = FileSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        filename = serializer.validated_data['file'].name
+
+        with open(filename, 'wb') as f:
+            f.write(serializer.validated_data['file'].read())
+
+        sales_file = SalesFile(file_name=filename, status=Status.SYNC)
+        sales_file.save()
+
+        df = pandas.read_csv(filename)
+
+        for _, row in df.iterrows():
+            sales = Sales(  
+                product_id=row['product'],
+                sales_date=row['date'],
+                quantity=row['quantity'],
+                import_file=sales_file
+            )
+            sales.save()
+
+        return Response(status=201)
+
+
+class SalesList(APIView):
+    pass

@@ -4,8 +4,6 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 class CustomJWTAuthentication(JWTAuthentication):
     def get_header(self, request):
 
-        print("test")
-
         token = request.COOKIES.get('access')
 
         request.META['HTTP_AUTHORIZATION'] = '{header_type} {access_token}'.format(
